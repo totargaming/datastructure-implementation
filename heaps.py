@@ -1,4 +1,9 @@
 import heapq
+from typing import NamedTuple
+class PriorityQueue(NamedTuple):
+    priority: int
+    work_item: str
+    
 class MedianFinder:
     def __init__(self) -> None:
         self.heaps = [], []
