@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 const int MAXV = 100;
 class EdgeNode {
  public:
@@ -16,7 +17,9 @@ class Graph {
   int nvertices;
   int nedges;
   bool directed;
-
+  bool processed[MAXV + 1];
+  bool discovered[MAXV + 1];
+  int parent[MAXV + 1];
   void initialize_graph(bool directed) {
     int i;
     this->nvertices = 0;
@@ -57,6 +60,58 @@ class Graph {
         p = p->next;
       }
       std::cout << "/n";
+    }
+  }
+  void initialize_search() {
+    for (int i = 1; i <= this->nvertices; i++) {
+      processed[i] = false;
+      discovered[i] = false;
+      parent[i] = -1;
+    }
+  }
+  void bfs(int start) {
+    std::queue<int> q;
+    int v, y;
+    EdgeNode* p;
+    q.push(start);
+    discovered[start] = true;
+    while (!q.empty()) {
+      v = q.front();
+      q.pop();
+      processed[v] = true;
+      p = this->edges[v];
+      while (p != nullptr) {
+        y = p->y;
+        if (!processed[y] || this->directed) {
+        }
+        if (!discovered[y]) {
+          q.push(y);
+          discovered[y] = true;
+          parent[y] = v;
+        }
+        p = p->next;
+      }
+    }
+  }
+  void find_path(int start, int end) {
+    if (start == end) {
+      std::cout << start << std::endl;
+
+    } else if (end != -1) {
+      find_path(start, this->parent[end]);
+      std::cout << end << std::endl;
+    }
+  }
+  void connected_component() {
+    int c{0};
+    this->initialize_graph(false);
+    for (int i = 1; i <= this->nvertices; i++) {
+      if (!discovered[i]) {
+        ++c;
+        std::cout << "Component " << c << " : " << std::endl;
+        bfs(i);
+        std::cout << "/n";
+      }
     }
   }
 };
