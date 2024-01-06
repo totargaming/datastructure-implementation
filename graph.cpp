@@ -133,10 +133,11 @@ class Graph {
       y = p->y;
       if (!discovered[y]) {
         parent[y] = v;
+        this->process_edge(v, y);
         this->dfs(y);
 
       } else if ((!processed[y] && parent[v] != y) || this->directed) {
-        // process_edge(v,y)
+        this->process_edge(v, y);
       }
       if (finished) {
         return;
@@ -146,5 +147,52 @@ class Graph {
     time++;
     exit_time[v] = time;
     processed[v] = true;
+  }
+  void process_edge(int x, int y) {
+    if (parent[y] != x) {
+      std::cout << "Cycle from " << x << "to" << y << " : ";
+      this->find_path(y, x);
+      finished = true;
+    }
+  }
+
+  int prim(int start) {
+    EdgeNode* p;
+    bool intree[MAXV + 1];
+    int distance[MAXV + 1];
+    int v, y, dist;
+    int weight = 0;
+    for (int i = 1; i <= this->nvertices; i++) {
+      intree[i] = false;
+      distance[i] = INT_MAX;
+      parent[i] = -1;
+    }
+    distance[start] = 0;
+    v = start;
+
+    while (!intree[v]) {
+      intree[v] = true;
+      if (v != start) {
+        std::cout << "Edge (" << parent[v] << "," << v << ") in tree \n"
+                  << std::endl;
+        weight += dist;
+      }
+      p = this->edges[v];
+      while (p != nullptr) {
+        y = p->y;
+        if ((p->weight < distance[y]) && (!intree[y])) {
+          distance[y] = p->weight;
+          parent[y] = v;
+        }
+        p = p->next;
+      }
+      for (int i = 0; i < this->nvertices; i++) {
+        if (!intree[i] && (distance[i] < dist)) {
+          dist = distance[i];
+          v = i;
+        }
+      }
+    }
+    return weight;
   }
 };
