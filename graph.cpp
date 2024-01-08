@@ -1,5 +1,8 @@
+#include <algorithm>
 #include <iostream>
 #include <queue>
+
+#include "unionFind.hpp"
 const int MAXV = 100;
 class EdgeNode {
  public:
@@ -8,6 +11,19 @@ class EdgeNode {
   EdgeNode* next;
   EdgeNode(int y, int weight, EdgeNode* next = nullptr)
       : y(y), weight(weight), next(next) {}
+};
+
+class EdgePair {
+ public:
+  int x, y;
+  int weight;
+
+  EdgePair() : x(0), y(0), weight(0) {}  // Default constructor
+
+  EdgePair(int x, int y, int weight)
+      : x(x), y(y), weight(weight) {}  // Parameterized constructor
+
+  bool operator<(const EdgePair& rhs) const { return weight < rhs.weight; }
 };
 
 class Graph {
@@ -53,6 +69,16 @@ class Graph {
       insert_edge(y, x, true);
     } else {
       this->nedges++;
+    }
+  }
+  void to_edge_array(EdgePair* e[]) {
+    int index = 0;
+    for (int src = 1; src <= nvertices; src++) {
+      EdgeNode* edgeNode = edges[src];
+      while (edgeNode != nullptr) {
+        e[index++] = new EdgePair(src, edgeNode->y, edgeNode->weight);
+        edgeNode = edgeNode->next;
+      }
     }
   }
   void print_graph() {
@@ -192,6 +218,29 @@ class Graph {
           v = i;
         }
       }
+    }
+    return weight;
+  }
+  void sort_edges(EdgePair* e[], int size) {
+    std::sort(e, e + size, [](const EdgePair* a, const EdgePair* b) {
+      return a->weight < b->weight;
+    });
+  }
+  int kruskal(int start) {
+    unionFind s;
+    EdgePair* e[MAXV + 1];  // Change MAXV to MAXE
+    int weight = 0;
+    s.union_find_init(this->nvertices);
+    this->to_edge_array(e);
+    this->sort_edges(e, this->nedges);
+    for (int i = 0; i < this->nedges; i++) {
+      if (!s.same_component(e[i]->x, e[i]->y)) {
+        std::cout << "Edge (" << e[i]->x << "," << e[i]->y << ") in MST \n"
+                  << std::endl;
+        weight += e[i]->weight;
+        s.union_sets(e[i]->x, e[i]->y);
+      }
+      delete e[i];  // Free memory
     }
     return weight;
   }

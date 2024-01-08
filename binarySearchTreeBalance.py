@@ -8,8 +8,8 @@ def sorted_array_to_bst(nodes):
     if not nodes:
         return None 
     mid = len(nodes)//2
-    node.left = sorted_array_to_bst(node[:mid])
     node = Node(node[mid])
+    node.left = sorted_array_to_bst(node[:mid])
     node.right = sorted_array_to_bst(node[mid+1:])
     
     return node
