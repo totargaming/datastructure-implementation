@@ -212,6 +212,7 @@ class Graph {
         }
         p = p->next;
       }
+      dist = INT_MAX;
       for (int i = 0; i < this->nvertices; i++) {
         if (!intree[i] && (distance[i] < dist)) {
           dist = distance[i];
@@ -243,5 +244,45 @@ class Graph {
       delete e[i];  // Free memory
     }
     return weight;
+  }
+  int* dijkstra(int start) {
+    EdgeNode* p;
+    bool intree[MAXV + 1];
+    int distance[MAXV + 1];
+    int v, y, dist{INT_MAX};
+    int weight = 0;
+    for (int i = 1; i <= this->nvertices; i++) {
+      intree[i] = false;
+      distance[i] = INT_MAX;
+      parent[i] = -1;
+    }
+    distance[start] = 0;
+    v = start;
+
+    while (!intree[v]) {
+      intree[v] = true;
+      if (v != start) {
+        std::cout << "Edge (" << parent[v] << "," << v << ") in tree \n"
+                  << std::endl;
+        weight += dist;
+      }
+      p = this->edges[v];
+      while (p != nullptr) {
+        y = p->y;
+        if ((p->weight + distance[v] < distance[y])) {
+          distance[y] = p->weight + distance[v];
+          parent[y] = v;
+        }
+        p = p->next;
+      }
+      dist = INT_MAX;
+      for (int i = 0; i < this->nvertices; i++) {
+        if (!intree[i] && (distance[i] < dist)) {
+          dist = distance[i];
+          v = i;
+        }
+      }
+    }
+    return distance;
   }
 };
