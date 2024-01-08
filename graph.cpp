@@ -25,6 +25,10 @@ class EdgePair {
 
   bool operator<(const EdgePair& rhs) const { return weight < rhs.weight; }
 };
+class AdjacencyMatrix {
+ public:
+  int weight[MAXV + 1][MAXV + 1], nvertices;
+};
 
 class Graph {
  public:
@@ -284,5 +288,16 @@ class Graph {
       }
     }
     return distance;
+  }
+  void floyd(AdjacencyMatrix* g) {
+    for (int k = 1; k <= g->nvertices; k++) {
+      for (int i = 1; i <= g->nvertices; i++) {
+        for (int j = 0; j < g->nvertices; j++) {
+          if (g->weight[i][j] > g->weight[i][k] + g->weight[k][j]) {
+            g->weight[i][j] = g->weight[i][k] + g->weight[k][j];
+          }
+        }
+      }
+    }
   }
 };
