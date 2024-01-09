@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <queue>
+#include <stack>
 
 #include "unionFind.hpp"
 const int MAXV = 100;
@@ -149,7 +150,7 @@ class Graph {
       }
     }
   }
-  void dfs(int v) {
+  void dfs(int v, std::stack<int>& sorted) {
     EdgeNode* p;
     int y;
     if (finished) {
@@ -164,7 +165,7 @@ class Graph {
       if (!discovered[y]) {
         parent[y] = v;
         this->process_edge(v, y);
-        this->dfs(y);
+        this->dfs(y, sorted);
 
       } else if ((!processed[y] && parent[v] != y) || this->directed) {
         this->process_edge(v, y);
@@ -174,15 +175,31 @@ class Graph {
       }
       p = p->next;
     }
+    // this->process_vertex_late(v,sorted); for topsort
     time++;
     exit_time[v] = time;
     processed[v] = true;
   }
+
+  // this is for top sort
+
+  void process_vertex_late(int v, std::stack<int>& sorted) { sorted.push(v); };
+
   void process_edge(int x, int y) {
     if (parent[y] != x) {
       std::cout << "Cycle from " << x << "to" << y << " : ";
       this->find_path(y, x);
       finished = true;
+    }
+  }
+
+  void topsort() {
+    std::stack<int> sorted;
+
+    for (int i = 1; i <= this->nvertices; i++) {
+      if (!discovered[i]) {
+        dfs(i, sorted);
+      }
     }
   }
 
